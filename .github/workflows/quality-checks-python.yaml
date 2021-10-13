@@ -1,7 +1,6 @@
 name: Python quality checks
 
-on:
-  workflow_call:
+on: workflow_call
 
 jobs:
   quality-checks:
