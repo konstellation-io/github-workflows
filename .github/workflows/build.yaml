@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Generate a release tag
-        uses: 
+        uses: intelygenz/monorepo-tagger-action@v1.0-rc.1
         id: release_tag
         with:
           mode: 'component'
@@ -55,7 +55,7 @@ jobs:
           echo Component version in release branch is ${TAG}
 
       - name: Generate a fix
-        uses: 
+        uses: intelygenz/monorepo-tagger-action@v1.0-rc.1
         id: fix_tag
         with:
           mode: 'component'
