@@ -12,6 +12,9 @@ on:
       component_path:
         required: true
         type: string
+      component_image:
+        required: true
+        type: string
     secrets:
       github_token:
         required: true
@@ -114,8 +117,8 @@ jobs:
           #    platforms: linux/amd64
           #    push: true
           #    tags: |
-          #      konstellation/${{ inputs.component }}:${{ steps.version.outputs.tag }}
-          #      konstellation/${{ inputs.component }}:latest
+          #      konstellation/${{ inputs.component_image }}:${{ steps.version.outputs.tag }}
+          #      konstellation/${{ inputs.component_image }}:latest
           #    cache-from: type=local,src=/tmp/.buildx-cache
           #    cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
