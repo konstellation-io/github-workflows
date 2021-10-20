@@ -72,7 +72,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.github_token }}
 
   build-release:
-    if: always() & (needs.create-release-tag.outputs.tag || needs.create-fix-tag.outputs.tag)
+    if: | 
+      always() && 
+      (needs.create-release-tag.outputs.tag || needs.create-fix-tag.outputs.tag)
     needs: [create-release-tag, create-fix-tag]
     outputs:
       component-version: ${{ steps.set_tag.outputs.VERSION }}
