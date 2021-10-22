@@ -161,8 +161,8 @@ jobs:
       - if: ${{ inputs.component_app }}
         name: Replace appVersion if the app principal has changed
         run: |
-          yq w -i helm/${{ inputs.chart_name }}/Chart.yaml 'appVersion' ${{ needs.build-release.outputs.app-version }}
-          echo 'appVersion' ${{ needs.build-release.outputs.app-version }}
+          yq w -i helm/${{ inputs.chart_name }}/Chart.yaml 'appVersion' ${{ needs.build-release.outputs.component-version }}
+          echo 'appVersion' ${{ needs.build-release.outputs.component-version }}
 
       - name: Commit files
         run: |
@@ -170,7 +170,7 @@ jobs:
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
           if ${{ inputs.component_app }}; then
-            git commit -m "Update chart ${{ inputs.chart_name }} version to ${{ needs.build-release.outputs.app-version }} [skip-ci]" -a
+            git commit -m "Update chart ${{ inputs.chart_name }} version to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
           else
             git commit -m "Update ${{ inputs.component }} component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
           fi
