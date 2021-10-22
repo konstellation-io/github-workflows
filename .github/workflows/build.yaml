@@ -19,6 +19,13 @@ on:
         required: false
         default: false
         type: boolean
+      component_app:
+        required: false
+        default: false
+        type: boolean
+      chart_name:
+        required: true
+        type: string
     secrets:
       github_token:
         required: true
@@ -61,7 +68,7 @@ jobs:
       - name: Get component versions
         id: component_version
         run: |
-          TAG=`yq r helm/kdl-server/values.yaml '${{ inputs.component_helm }}.image.tag'`
+          TAG=`yq r helm/${{ inputs.chart_name }}/values.yaml '${{ inputs.component_helm }}.image.tag'`
           echo ::set-output name=TAG::${TAG}
           echo Component version in release branch is ${TAG}
 
@@ -143,19 +150,31 @@ jobs:
       - uses: chrisdickinson/setup-yq@latest
       - name: Replace component versions
         run: |
-          yq w -i helm/kdl-server/values.yaml '${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
+          yq w -i helm/${{ inputs.chart_name }}/values.yaml '${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
           echo 'component version' ${{ needs.build-release.outputs.component-version }}
 
       - if: ${{ inputs.component_usertools_operator }}
-        name: Replace component versions
+        name: Replace component versions if it's in usertools
         run: |
-          yq w -i helm/kdl-server/values.yaml 'userToolsOperator.${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
+          yq w -i helm/${{ inputs.chart_name }}/values.yaml 'userToolsOperator.${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
+
+      - if: ${{ inputs.component_app }}
+        name: Replace appVersion if the app principal has changed
+        run: |
+          yq w -i helm/${{ inputs.chart_name }}/Chart.yaml 'appVersion' ${{ needs.build-release.outputs.app-version }}
+          echo 'appVersion' ${{ needs.build-release.outputs.app-version }}
 
       - name: Commit files
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit -m "Update ${{ inputs.component }} component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
+
+          if ${{ inputs.component_app }}; then
+            git commit -m "Update chart ${{ inputs.chart_name }} version to ${{ needs.build-release.outputs.app-version }} [skip-ci]" -a
+          else
+            git commit -m "Update ${{ inputs.component }} component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
+          fi
+
           git tag -f "${{ inputs.component }}-${{ needs.build-release.outputs.component-version }}"
           git push
           git push --tags --force
