@@ -147,7 +147,7 @@ jobs:
         run: |
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit -m "Update backup component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
+          git commit -m "Update ${{ inputs.component }} component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
