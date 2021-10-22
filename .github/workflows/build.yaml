@@ -15,6 +15,10 @@ on:
       component_image:
         required: true
         type: string
+      component_usertools_operator:
+        required: false
+        default: false
+        type: boolean
     secrets:
       github_token:
         required: true
@@ -139,9 +143,13 @@ jobs:
       - uses: chrisdickinson/setup-yq@latest
       - name: Replace component versions
         run: |
-          # set app version and chart version for kdl
           yq w -i helm/kdl-server/values.yaml '${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
           echo 'component version' ${{ needs.build-release.outputs.component-version }}
+
+      - if: ${{ inputs.component_usertools_operator }}
+        name: Replace component versions
+        run: |
+          yq w -i helm/kdl-server/values.yaml 'userToolsOperator.${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
 
       - name: Commit files
         run: |
