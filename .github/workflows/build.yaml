@@ -106,6 +106,7 @@ jobs:
         id: set_tag
         run: |
           VERSION=${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
+          VERSION=`echo $VERSION | sed "s/${{ inputs.component }}-//"`
           echo Tag set to ${VERSION}
           echo ::set-output name=VERSION::${VERSION}
 
