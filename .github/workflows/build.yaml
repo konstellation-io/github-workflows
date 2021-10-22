@@ -148,6 +148,8 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git commit -m "Update ${{ inputs.component }} component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
+          git tag -f "${{ inputs.component }}-${{ needs.build-release.outputs.component-version }}"
           git push
+          git push --tags --force
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
