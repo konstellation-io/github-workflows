@@ -96,6 +96,5 @@ jobs:
         with:
           mode: 'product'
           type: 'final'
-          default-branch: ${{ needs.create-release-branch.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.github_token }}
