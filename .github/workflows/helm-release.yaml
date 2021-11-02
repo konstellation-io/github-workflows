@@ -20,8 +20,7 @@ jobs:
     outputs:
       tag: ${{ steps.rc_tag.outputs.tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Generate a pre-release
         id: rc_tag
@@ -44,8 +43,7 @@ jobs:
     outputs:
       tag: ${{ steps.fix_tag.outputs.tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Generate a fix tag
         id: fix_tag
@@ -67,8 +65,7 @@ jobs:
       rc: needs.create-rc-tag.outputs.tag != null
       fix: needs.create-fix-tag.outputs.tag != null
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.workflow_run.head_branch }} # Checkout the branch in the original workflow
 

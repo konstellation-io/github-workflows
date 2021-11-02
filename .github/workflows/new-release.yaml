@@ -17,8 +17,7 @@ jobs:
     outputs:
       tag: ${{ steps.release_branch.outputs.tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Generate a new release branch
         id: release_branch
@@ -36,8 +35,7 @@ jobs:
     outputs:
       tag: ${{ steps.release_tag.outputs.tag }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Generate a release
         id: release_tag
@@ -57,8 +55,7 @@ jobs:
       - name: Show branch
         run: echo checkout branch with name ${{ needs.create-release-branch.outputs.tag }}
 
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           ref: ${{ needs.create-release-branch.outputs.tag }} # Checkout the branch that was created for the release
 
@@ -85,8 +82,7 @@ jobs:
     needs: [release, create-release-branch]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           ref: ${{ needs.create-release-branch.outputs.tag }} # Checkout the branch that was created for the release
 
