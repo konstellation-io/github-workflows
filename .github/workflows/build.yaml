@@ -41,8 +41,7 @@ jobs:
     outputs:
       tag: ${{ steps.release_tag.outputs.tag }}
     steps:
-      - name: CheckOut
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Generate a release tag
         uses: intelygenz/monorepo-tagger-action@v1.0
@@ -61,8 +60,7 @@ jobs:
     outputs:
       tag: ${{ steps.fix_tag.outputs.tag }}
     steps:
-      - name: CheckOutversion
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - uses: chrisdickinson/setup-yq@latest
       - name: Get component versions
@@ -137,8 +135,7 @@ jobs:
             rm -rf /tmp/.buildx-cache
             mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      - name: CheckOut
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
         with:
           ref: ${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
 
@@ -147,8 +144,7 @@ jobs:
     needs: build-release
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - uses: chrisdickinson/setup-yq@latest
       - name: Replace component versions
