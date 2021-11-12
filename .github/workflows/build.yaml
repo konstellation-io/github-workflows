@@ -27,7 +27,7 @@ on:
         required: true
         type: string
     secrets:
-      github_token:
+      pat:
         required: true
       docker_username:
         required: true
@@ -42,6 +42,8 @@ jobs:
       tag: ${{ steps.release_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.pat }}
 
       - name: Generate a release tag
         uses: intelygenz/monorepo-tagger-action@v1.0
@@ -51,7 +53,7 @@ jobs:
           type: 'final'
           component-prefix: "${{ inputs.component }}-"
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.pat }}
 
 
   create-fix-tag:
@@ -61,6 +63,8 @@ jobs:
       tag: ${{ steps.fix_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.pat }}
 
       - uses: chrisdickinson/setup-yq@latest
       - name: Get component versions
@@ -79,7 +83,7 @@ jobs:
           component-prefix: "${{ inputs.component }}-"
           current-tag: ${{ steps.component_version.outputs.TAG }}
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.pat }}
 
   build-release:
     if: | 
@@ -138,6 +142,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
+          token: ${{ secrets.pat }}
 
   chart-update-values:
     if: always() && needs.build-release.outputs.component-version
@@ -145,6 +150,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.pat }}
 
       - uses: chrisdickinson/setup-yq@latest
       - name: Replace component versions
@@ -177,5 +184,3 @@ jobs:
           git tag -f "${{ inputs.component }}-${{ needs.build-release.outputs.component-version }}"
           git push
           git push --tags --force
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}

@@ -7,7 +7,7 @@ on:
         required: true
         type: string
     secrets:
-      github_token:
+      pat:
         required: true
 
 jobs:
@@ -21,6 +21,8 @@ jobs:
       tag: ${{ steps.rc_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.pat }}
 
       - name: Generate a pre-release
         id: rc_tag
@@ -32,7 +34,7 @@ jobs:
           release-branch-prefix: "release/v"
           pre-release-name: 'rc'
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.pat }}
 
   create-fix-tag:
     # Just after a workflow completes successfully and the workflows was triggered in a release branch
@@ -44,6 +46,8 @@ jobs:
       tag: ${{ steps.fix_tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.pat }}
 
       - name: Generate a fix tag
         id: fix_tag
@@ -53,7 +57,7 @@ jobs:
           type: 'fix'
           release-branch-prefix: "release/v"
         env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
+          GITHUB_TOKEN: ${{ secrets.pat }}
 
   release:
     if: |
@@ -67,6 +71,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
+          token: ${{ secrets.pat }}
           ref: ${{ github.event.workflow_run.head_branch }} # Checkout the branch in the original workflow
 
       - name: App Version
@@ -93,6 +98,3 @@ jobs:
           git tag -f "${{ steps.get_version.outputs.VERSION }}"
           git push
           git push --tags --force
-        env:
-          GITHUB_TOKEN: ${{ secrets.github_token }}
-
