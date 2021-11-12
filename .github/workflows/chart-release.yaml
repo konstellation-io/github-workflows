@@ -11,6 +11,7 @@ on:
         type: string
 
 jobs:
+
   chart-release:
     runs-on: ubuntu-latest
     steps:
