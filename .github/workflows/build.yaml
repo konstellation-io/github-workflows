@@ -6,25 +6,24 @@ on:
       component:
         required: true
         type: string
-      component_helm:
+      component_helm_tag:
         required: true
         type: string
       component_path:
         required: true
         type: string
+      component_app:
+        required: false
+        type: boolean
+        default: false
       component_image:
         required: true
         type: string
-      component_usertools_operator:
-        required: false
-        default: false
-        type: boolean
-      component_app:
-        required: false
-        default: false
-        type: boolean
-      chart_name:
+      values_file:
         required: true
+        type: string
+      chart_file:
+        required: false
         type: string
     secrets:
       pat:
@@ -39,28 +38,43 @@ jobs:
     if: github.ref == 'refs/heads/main' # only in main branch
     runs-on: ubuntu-20.04
     outputs:
-      tag: ${{ steps.release_tag.outputs.tag }}
+      tag: ${{ steps.release_tag_component.outputs.tag }}${{ steps.release_tag_app.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.pat }}
 
-      - name: Generate a release tag
-        uses: intelygenz/monorepo-tagger-action@v1.0
-        id: release_tag
+      - if: ${{ !inputs.component_app }}
+        name: Generate a release tag for component
+        uses: intelygenz/monorepo-tagger-action@v1.2.1
+        id: release_tag_component
         with:
           mode: 'component'
           type: 'final'
           component-prefix: "${{ inputs.component }}-"
+          strip-component-from-tag: true
+          update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}]'
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
+      - if: ${{ inputs.component_app }}
+        name: Generate a release tag for component app
+        uses: intelygenz/monorepo-tagger-action@v1.2.1
+        id: release_tag_app
+        with:
+          mode: 'component'
+          type: 'final'
+          component-prefix: "${{ inputs.component }}-"
+          strip-component-from-tag: true
+          update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}, {"file": "${{ inputs.chart_file }}", "property": "appVersion"}]'
+        env:
+          GITHUB_TOKEN: ${{ secrets.pat }}
 
   create-fix-tag:
     if: startsWith(github.ref, 'refs/heads/release') # only in release branches
     runs-on: ubuntu-20.04
     outputs:
-      tag: ${{ steps.fix_tag.outputs.tag }}
+      tag: ${{ steps.fix_tag_component.outputs.tag }}${{ steps.fix_tag_app.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -70,18 +84,35 @@ jobs:
       - name: Get component versions
         id: component_version
         run: |
-          TAG=`yq r helm/${{ inputs.chart_name }}/values.yaml '${{ inputs.component_helm }}.image.tag'`
+          TAG=`yq r ${{ inputs.values_file }} '${{ inputs.component_helm_tag }}'`
           echo ::set-output name=TAG::${TAG}
           echo Component version in release branch is ${TAG}
 
-      - name: Generate a fix
-        uses: intelygenz/monorepo-tagger-action@v1.0
-        id: fix_tag
+      - if: ${{ !inputs.component_app }}
+        name: Generate a fix tag for component
+        uses: intelygenz/monorepo-tagger-action@v1.2.1
+        id: fix_tag_component
         with:
           mode: 'component'
           type: 'fix'
           component-prefix: "${{ inputs.component }}-"
+          strip-component-from-tag: true
           current-tag: ${{ steps.component_version.outputs.TAG }}
+          update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}]'
+        env:
+          GITHUB_TOKEN: ${{ secrets.pat }}
+
+      - if: ${{ inputs.component_app }}
+        name: Generate a fix tag for component app
+        uses: intelygenz/monorepo-tagger-action@v1.2.1
+        id: fix_tag_app
+        with:
+          mode: 'component'
+          type: 'fix'
+          component-prefix: "${{ inputs.component }}-"
+          strip-component-from-tag: true
+          current-tag: ${{ steps.component_version.outputs.TAG }}
+          update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}, {"file": "${{ inputs.chart_file }}", "property": "appVersion"}]'
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
@@ -90,10 +121,13 @@ jobs:
       always() && 
       (needs.create-release-tag.outputs.tag || needs.create-fix-tag.outputs.tag)
     needs: [create-release-tag, create-fix-tag]
-    outputs:
-      component-version: ${{ steps.set_tag.outputs.VERSION }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          ref: "${{ inputs.component }}-${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}" 
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
 
@@ -113,14 +147,6 @@ jobs:
           username: ${{ secrets.docker_username }}
           password: ${{ secrets.docker_token }}
 
-      - name: Store tag
-        id: set_tag
-        run: |
-          VERSION=${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
-          VERSION=`echo $VERSION | sed "s/${{ inputs.component }}-//"`
-          echo Tag set to ${VERSION}
-          echo ::set-output name=VERSION::${VERSION}
-
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
@@ -129,7 +155,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            konstellation/${{ inputs.component_image }}:${{ steps.version.outputs.tag }}
+            konstellation/${{ inputs.component_image }}:${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
             konstellation/${{ inputs.component_image }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
@@ -138,49 +164,3 @@ jobs:
         run: |
             rm -rf /tmp/.buildx-cache
             mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
-          token: ${{ secrets.pat }}
-
-  chart-update-values:
-    if: always() && needs.build-release.outputs.component-version
-    needs: build-release
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.pat }}
-
-      - uses: chrisdickinson/setup-yq@latest
-      - name: Replace component versions
-        run: |
-          yq w -i helm/${{ inputs.chart_name }}/values.yaml '${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
-          echo 'component version' ${{ needs.build-release.outputs.component-version }}
-
-      - if: ${{ inputs.component_usertools_operator }}
-        name: Replace component versions if it's in usertools
-        run: |
-          yq w -i helm/${{ inputs.chart_name }}/values.yaml 'userToolsOperator.${{ inputs.component_helm }}.image.tag' ${{ needs.build-release.outputs.component-version }}
-
-      - if: ${{ inputs.component_app }}
-        name: Replace appVersion if the app principal has changed
-        run: |
-          yq w -i helm/${{ inputs.chart_name }}/Chart.yaml 'appVersion' ${{ needs.build-release.outputs.component-version }}
-          echo 'appVersion' ${{ needs.build-release.outputs.component-version }}
-
-      - name: Commit files
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-          if ${{ inputs.component_app }}; then
-            git commit -m "Update chart ${{ inputs.chart_name }} version to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
-          else
-            git commit -m "Update ${{ inputs.component }} component to ${{ needs.build-release.outputs.component-version }} [skip-ci]" -a
-          fi
-
-          git tag -f "${{ inputs.component }}-${{ needs.build-release.outputs.component-version }}"
-          git push
-          git push --tags --force
