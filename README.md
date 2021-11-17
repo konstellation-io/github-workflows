@@ -21,7 +21,7 @@ Inputs:
 4. [build](./.github/workflows/build.yaml): Generate a release/fix tag for each component that uses this template, build the image and update the chart values with the new version. It's used to generate a new appversion if the principal app changes.
 Inputs and secrets:
     - `component`: Component name to generate a new rc or fix.
-    - `component_helm`: Naming used in the chart values yaml to update with the new component tag value.
+    - `component_helm_tag`: Naming used in the chart values yaml to update with the new component tag value.
     - `component_path`: Path to the Dockerfile to build the image.
     - `component_image`: Used to push the image to dockerhub or another registry with this name.
     - `component_app`: To identify the principal application to update the chart appversion.
