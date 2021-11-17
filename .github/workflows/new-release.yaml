@@ -3,7 +3,7 @@ name: New release workflow
 on:
   workflow_call:
     inputs:
-      chart_name:
+      chart_file:
         required: true
         type: string
     secrets:
@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate a new release branch
         id: release_branch
-        uses: intelygenz/monorepo-tagger-action@v1.0
+        uses: intelygenz/monorepo-tagger-action@v1.2.1
         with:
           release-branch-prefix: "release/v"
           mode: 'product'
@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
-  calculate-release-tag:
+  create-release-tag:
     needs: create-release-branch
     runs-on: ubuntu-latest
     outputs:
@@ -40,61 +40,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.pat }}
+          ref: ${{ needs.create-release-branch.outputs.tag }}
 
       - name: Generate a release
         id: release_tag
-        uses: intelygenz/monorepo-tagger-action@v1.0
+        uses: intelygenz/monorepo-tagger-action@v1.2.1
         with:
           mode: 'product'
           type: 'final'
-          dry-run: true
+          update-versions-in: '[{"file": "${{ inputs.chart_file }}", "property": "version"}]'
+          tag-branch: ${{ needs.create-release-branch.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
-  release:
-    needs: [create-release-branch, calculate-release-tag]
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Show branch
-        run: echo checkout branch with name ${{ needs.create-release-branch.outputs.tag }}
-
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.pat }}
-          ref: ${{ needs.create-release-branch.outputs.tag }} # Checkout the branch that was created for the release
-
-      - uses: chrisdickinson/setup-yq@latest
-      - name: Replace component versions
-        run: |
-          # set app version and chart version for kdl
-          yq w -i helm/${{ inputs.chart_name }}/Chart.yaml 'version' ${{ needs.calculate-release-tag.outputs.tag  }}
-
-          # debug output
-          echo 'version' ${{ needs.calculate-release-tag.outputs.tag  }}
-
-      - name: Commit files
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit -m "Update chart to version ${{ needs.calculate-release-tag.outputs.tag }} [skip-ci]" -a
-          git push
-
-  create-release-tag:
-    if: always()
-    needs: [release, create-release-branch]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.pat }}
-          ref: ${{ needs.create-release-branch.outputs.tag }} # Checkout the branch that was created for the release
-
-      - name: Generate a release
-        id: release_tag
-        uses: intelygenz/monorepo-tagger-action@v1.0
-        with:
-          mode: 'product'
-          type: 'final'
-        env:
-          GITHUB_TOKEN: ${{ secrets.pat }}
