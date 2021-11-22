@@ -28,10 +28,10 @@ on:
     secrets:
       pat:
         required: true
-      docker_username:
-        required: true
-      docker_token:
-        required: true
+        #docker_username:
+        #  required: true
+        #docker_token:
+        #  required: true
 
 jobs:
   create-release-tag:
@@ -141,24 +141,15 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildx-
 
-      - name: Login to DockerHub Registry
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.docker_username }}
-          password: ${{ secrets.docker_token }}
-
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
           context: ./${{ inputs.component_path }}
           file: ./${{ inputs.component_path }}/Dockerfile
           platforms: linux/amd64
-          push: true
-          tags: |
-            konstellation/${{ inputs.component_image }}:${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
-            konstellation/${{ inputs.component_image }}:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          push: false
+          cache-from: type=registry,ref=konstellation/${{ inputs.component_image }}:latest
+          cache-to: type=inline
 
       - name: Move cache
         run: |
