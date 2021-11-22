@@ -151,7 +151,3 @@ jobs:
           cache-from: type=registry,ref=konstellation/${{ inputs.component_image }}:latest
           cache-to: type=inline
 
-      - name: Move cache
-        run: |
-            rm -rf /tmp/.buildx-cache
-            mv /tmp/.buildx-cache-new /tmp/.buildx-cache
