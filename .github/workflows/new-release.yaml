@@ -60,11 +60,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.pat }}
       
       - uses: azure/setup-helm@v1
-
+      
       - name: Update dependency
         run: |
           helm repo add minio https://helm.min.io/
-
+     
       - name: Generate chart release
         uses: helm/chart-releaser-action@v1.2.1
         with:
