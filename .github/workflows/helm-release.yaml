@@ -6,6 +6,12 @@ on:
       chart_file:
         required: true
         type: string
+      chart_url:
+        required: true
+        type: string
+      chart_path:
+        required: true
+        type: string
     secrets:
       pat:
         required: true
@@ -60,3 +66,11 @@ jobs:
           update-versions-in: '[{"file": "${{ inputs.chart_file }}", "property": "version"}]'
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
+
+      - name: Generate chart release
+        uses: helm/chart-releaser-action@v1.2.1
+        with:
+          charts_dir: ${{ inputs.chart_path }}
+          charts_repo_url: ${{ inputs.chart_url }}
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

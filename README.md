@@ -8,11 +8,15 @@ This repository keeps the different workflows used in konstellation projects lik
 Inputs and secrets:
     - `chart_file`: The path to Chart.yaml helm file to update.
     - `github_token`: The token with privileges to write in the repository.
+    - `chart_url`: Chart repo URL.
+    - `chart_path`: Chart path to zip in the release.
 
 2. [new-release](./.github/workflows/new-release.yaml): This workflow allow us to generate a new release branch and tag and update the chart version.
 Inputs and secrets:
     - `chart_file`: The path to Chart.yaml helm file to update.
     - `github_token`: The token with privileges to write in the repository.
+    - `chart_url`: Chart repo URL.
+    - `chart_path`: Chart path to zip in the release.
 
 3. [lint-dockerfile](./.github/workflows/lint-dockerfile.yaml): This passes the hadolint tool to validate the Dockerfile.
 Inputs:
@@ -30,11 +34,6 @@ Inputs and secrets:
     - `pat`: The token with privileges to write in the repository. (be carefull if you are using branch rules)
     - `docker_username`: The username to push the image to the registry.
     - `docker_token`: The token used to authenticate and allow us to push the image into the registry.
-
-4. [chart-release](./.github/workflows/chart-release.yaml): Generate a helm chart release.
-Inputs and secrets:
-    - `chart_url`: Chart repo URL.
-    - `chart_path`: Chart path to zip in the release.
 
 ### References
 - https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
