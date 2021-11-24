@@ -14,8 +14,9 @@ jobs:
   create-rc-tag:
     # Just after a workflow completes successfully and the workflows was triggered in main branch
     if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main'
+      github.event.workflow_run.head_branch == 'main' &&
+      (github.event.workflow_run.conclusion == 'success' ||
+       github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.rc_tag.outputs.tag }}
