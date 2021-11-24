@@ -41,7 +41,7 @@ jobs:
   create-fix-tag:
     # Just after a workflow completes successfully and the workflows was triggered in a release branch
     if: |
-      always() || 
+      (startsWith(github.event.push.ref, 'refs/heads/release')) || 
       (startsWith(github.event.workflow_run.head_branch, 'release') &&
       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
