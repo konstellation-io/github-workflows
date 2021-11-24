@@ -14,7 +14,7 @@ jobs:
   create-rc-tag:
     # Just after a workflow completes successfully and the workflows was triggered in main branch
     if: |
-      always() || 
+      (github.event.push.ref == 'refs/heads/main') || 
       (github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
