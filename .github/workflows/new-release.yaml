@@ -63,7 +63,7 @@ jobs:
       
       - name: Update dependency
         run: |
-          helm repo add minio https://helm.min.io/
+          helm repo add minio https://charts.min.io/
      
       - name: Generate chart release
         uses: helm/chart-releaser-action@v1.2.1
