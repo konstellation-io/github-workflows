@@ -60,11 +60,18 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.pat }}
       
       - uses: azure/setup-helm@v1
-      
-      - name: Update dependency
+
+      - uses: chrisdickinson/setup-yq@latest
+
+      - name: Add repos
         run: |
-          helm repo add minio https://charts.min.io/
-     
+          for i in $(yq r ct.yaml 'chart-repos'| sed -e 's/^- //')
+          do
+            NAME=$(echo $i | awk -F"=" '{print $1}')
+            REPO=$(echo $i | awk -F"=" '{print $2}')
+            helm repo add $NAME $REPO
+          done
+      
       - name: Generate chart release
         uses: helm/chart-releaser-action@v1.2.1
         with:

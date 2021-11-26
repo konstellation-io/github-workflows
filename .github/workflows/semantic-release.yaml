@@ -8,6 +8,7 @@ on:
       - .github/workflows/new-release.yaml
       - .github/workflows/build.yaml
       - .github/workflows/helm-release.yaml
+      - .github/workflows/helm-lint.yaml
 
 jobs:
   release:

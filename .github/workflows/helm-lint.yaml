@@ -1,0 +1,32 @@
+name: Chart lint
+
+on:
+  workflow_call:
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: azure/setup-helm@v1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - uses: helm/chart-testing-action@v2.1.0
+
+      - uses: chrisdickinson/setup-yq@latest
+
+      - name: Add repos
+        run: |
+          for i in $(yq r ct.yaml 'chart-repos'| sed -e 's/^- //')
+          do
+            NAME=$(echo $i | awk -F"=" '{print $1}')
+            REPO=$(echo $i | awk -F"=" '{print $2}')
+            helm repo add $NAME $REPO
+          done
+
+      - name: Run chart linter
+        run: ct lint --all --config ct.yaml --lint-conf lintconf.yaml
