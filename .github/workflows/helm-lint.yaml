@@ -31,4 +31,4 @@ jobs:
           done
 
       - name: Run chart linter
-        run: ct lint --all --config ct.yaml
+        run: ct lint --all --config ct.yaml --lint-conf lintconf.yaml
