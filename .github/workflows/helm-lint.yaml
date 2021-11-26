@@ -23,7 +23,7 @@ jobs:
 
       - name: Add repos
         run: |
-          for i in `yq e '.chart-repos' ct.yaml`
+          for i in `yq r '.chart-repos' ct.yaml`
           do
             helm repo add `echo $i | awk -F"=" '{print $1 " " $2}'`;
           done
