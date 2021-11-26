@@ -23,6 +23,7 @@ jobs:
 
       - name: Add repos
         run: |
+          yq r ct.yaml '.chart-repos'
           for i in $(yq r ct.yaml '.chart-repos'| sed -e 's/^- //')
           do
             echo "==="
