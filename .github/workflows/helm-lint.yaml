@@ -25,6 +25,9 @@ jobs:
         run: |
           for i in $(yq r ct.yaml '.chart-repos'| sed -e 's/^- //')
           do
+            echo "==="
+            echo $i
+            echo "==="
             NAME=$(echo $i | awk -F"=" '{print $1}')
             REPO=$(echo $i | awk -F"=" '{print $2}')
             helm repo add $NAME $REPO
