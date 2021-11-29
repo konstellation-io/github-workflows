@@ -57,6 +57,7 @@ jobs:
         with:
           mode: 'product'
           type: 'fix'
+          tag-branch: ${{ github.event.workflow_run.head_branch }}
           release-branch-prefix: "release/v"
           update-versions-in: '[{"file": "${{ inputs.chart_file }}", "property": "version"}]'
         env:
