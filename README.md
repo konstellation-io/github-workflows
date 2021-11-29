@@ -35,9 +35,14 @@ Inputs and secrets:
     - `docker_username`: The username to push the image to the registry.
     - `docker_token`: The token used to authenticate and allow us to push the image into the registry.
 
+5. [helm-lint](./.github/workflows/helm-lint.yaml): Execute a helm lint on a chart repository to validate the configuration. You must to have a `ct.yaml` file configured and a `helmlintconf.yaml` file in your repository root to validate the rules.
+
 ### References
 - https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
 - https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onworkflow_callinputs
 - https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#onworkflow_callsecrets
 - https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#jobsjob_idstepsuses
+- https://github.com/helm/chart-testing-action
+- https://github.com/helm/chart-testing
+
 
