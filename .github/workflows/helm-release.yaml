@@ -55,6 +55,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           token: ${{ secrets.pat }}
+          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Generate a fix tag
         id: fix_tag
