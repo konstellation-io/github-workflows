@@ -23,7 +23,7 @@ jobs:
 
       - name: Generate a new release branch
         id: release_branch
-        uses: intelygenz/monorepo-tagger-action@v1.2.1
+        uses: intelygenz/monorepo-tagger-action@v1.2.2
         with:
           release-branch-prefix: "release/v"
           mode: 'product'
@@ -44,7 +44,7 @@ jobs:
 
       - name: Generate a release
         id: release_tag
-        uses: intelygenz/monorepo-tagger-action@v1.2.1
+        uses: intelygenz/monorepo-tagger-action@v1.2.2
         with:
           mode: 'product'
           type: 'final'
