@@ -83,7 +83,7 @@ jobs:
           if [[ $exists != "200" ]]; then
             echo "Creating release..."
             # package chart
-            ./cr package helm
+            ./cr package helm/$repo
             # upload chart to github relases
             ./cr upload \
                 --owner "$owner" \
