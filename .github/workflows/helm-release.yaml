@@ -62,6 +62,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
+      - uses: azure/setup-helm@v1
+
+      - uses: chrisdickinson/setup-yq@latest
+
       - name: Add repos
         run: |
           for i in $(yq r ct.yaml 'chart-repos'| sed -e 's/^- //')
