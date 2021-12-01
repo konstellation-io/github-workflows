@@ -62,21 +62,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
-      - uses: azure/setup-helm@v1
-
-      - uses: chrisdickinson/setup-yq@latest
-
-      - name: Add repos
-        run: |
-          for i in $(yq r ct.yaml 'chart-repos'| sed -e 's/^- //')
-          do
-            NAME=$(echo $i | awk -F"=" '{print $1}')
-            REPO=$(echo $i | awk -F"=" '{print $2}')
-            helm repo add $NAME $REPO
-          done
-
       - name: Chart releaser
         run: |
+           helm repo add minio https://helm.min.io/
           # donwload helm chart releaser
           curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v1.2.1/chart-releaser_1.2.1_linux_amd64.tar.gz"
           tar -xzf cr.tar.gz
