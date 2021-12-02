@@ -47,6 +47,7 @@ jobs:
         with:
           token: ${{ secrets.pat }}
           ref: ${{ needs.create-release-branch.outputs.tag }}
+          fetch-depth: 0
 
       - name: Generate a release
         id: release_tag
