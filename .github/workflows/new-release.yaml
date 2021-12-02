@@ -62,7 +62,6 @@ jobs:
       - name: Chart releaser 
         uses: stefanprodan/helm-gh-pages@v1.4.1
         with:
-          token: ${{ secrets.BOT_GITHUB_TOKEN }}
           charts_dir: ${{ inputs.chart_path }}
           charts_url: ${{ inputs.chart_url }}
           linting: "off"
