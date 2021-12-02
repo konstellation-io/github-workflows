@@ -56,6 +56,7 @@ jobs:
         with:
           token: ${{ secrets.pat }}
           ref: ${{ github.event.workflow_run.head_branch }}
+          fetch-depth: 0
 
       - name: Generate a fix tag
         id: fix_tag
