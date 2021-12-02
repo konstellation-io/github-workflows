@@ -105,6 +105,7 @@ jobs:
                 --git-repo "$repo" \
                 --token "${{ secrets.GITHUB_TOKEN }}" \
                 --charts-repo ${{ inputs.chart_url }} \
+                --index-path index.yaml \
                 --push
           else
             echo "Release already exists"
