@@ -16,6 +16,9 @@ on:
         required: false
         type: boolean
         default: false
+      component_app_name:
+        required: false
+        type: string
       component_image:
         required: true
         type: string
@@ -64,7 +67,7 @@ jobs:
         with:
           mode: 'component'
           type: 'final'
-          component-prefix: "${{ inputs.component }}-"
+          component-prefix: "${{ inputs.component_app_name }}-"
           strip-component-from-tag: true
           update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}, {"file": "${{ inputs.chart_file }}", "property": "appVersion"}]'
         env:
@@ -109,7 +112,7 @@ jobs:
         with:
           mode: 'component'
           type: 'fix'
-          component-prefix: "${{ inputs.component }}-"
+          component-prefix: "${{ inputs.component_app_name }}-"
           strip-component-from-tag: true
           current-tag: ${{ steps.component_version.outputs.TAG }}
           update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}, {"file": "${{ inputs.chart_file }}", "property": "appVersion"}]'
