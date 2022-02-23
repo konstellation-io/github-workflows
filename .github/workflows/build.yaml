@@ -7,7 +7,7 @@ on:
         required: true
         type: string
       component_helm_tag:
-        required: true
+        required: false
         type: string
       component_path:
         required: true
