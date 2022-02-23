@@ -20,11 +20,15 @@ on:
         required: true
         type: string
       values_file:
-        required: true
+        required: false
         type: string
       chart_file:
         required: false
         type: string
+      not_change_file:
+        required: false
+        type: boolean
+        default: false
     secrets:
       pat:
         required: true
@@ -44,7 +48,7 @@ jobs:
         with:
           token: ${{ secrets.pat }}
 
-      - if: ${{ !inputs.component_app }}
+      - if: ${{ !inputs.component_app && !inputs.not_change_file }} 
         name: Generate a release tag for component
         uses: intelygenz/monorepo-tagger-action@v1.2.2
         id: release_tag_component
@@ -54,6 +58,18 @@ jobs:
           component-prefix: "${{ inputs.component }}-"
           strip-component-from-tag: true
           update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}]'
+        env:
+          GITHUB_TOKEN: ${{ secrets.pat }}
+
+      - if: ${{ inputs.not_change_file }}
+        name: Generate a release tag for component and not change file
+        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        id: release_tag_component
+        with:
+          mode: 'component'
+          type: 'final'
+          component-prefix: "${{ inputs.component }}-"
+          strip-component-from-tag: true
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
@@ -88,7 +104,7 @@ jobs:
           echo ::set-output name=TAG::${TAG}
           echo Component version in release branch is ${TAG}
 
-      - if: ${{ !inputs.component_app }}
+      - if: ${{ !inputs.component_app && !inputs.not_change_file }}
         name: Generate a fix tag for component
         uses: intelygenz/monorepo-tagger-action@v1.2.2
         id: fix_tag_component
@@ -99,6 +115,19 @@ jobs:
           strip-component-from-tag: true
           current-tag: ${{ steps.component_version.outputs.TAG }}
           update-versions-in: '[{"file": "${{ inputs.values_file }}", "property": "${{ inputs.component_helm_tag }}"}]'
+        env:
+          GITHUB_TOKEN: ${{ secrets.pat }}
+
+      - if: ${{ inputs.not_change_file }}
+        name: Generate a fix tag for component and not change file
+        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        id: fix_tag_component
+        with:
+          mode: 'component'
+          type: 'fix'
+          component-prefix: "${{ inputs.component }}-"
+          strip-component-from-tag: true
+          current-tag: ${{ steps.component_version.outputs.TAG }}
         env:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
