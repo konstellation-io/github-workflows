@@ -50,7 +50,7 @@ jobs:
 
       - if: ${{ !inputs.component_app && !inputs.not_change_file }} 
         name: Generate a release tag for component
-        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        uses: intelygenz/monorepo-tagger-action@v1.3.0
         id: release_tag_component
         with:
           mode: 'component'
@@ -63,7 +63,7 @@ jobs:
 
       - if: ${{ inputs.not_change_file }}
         name: Generate a release tag for component and not change file
-        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        uses: intelygenz/monorepo-tagger-action@v1.3.0
         id: release_tag_not_component
         with:
           mode: 'component'
@@ -75,7 +75,7 @@ jobs:
 
       - if: ${{ inputs.component_app }}
         name: Generate a release tag for component app
-        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        uses: intelygenz/monorepo-tagger-action@v1.3.0
         id: release_tag_app
         with:
           mode: 'component'
@@ -106,7 +106,7 @@ jobs:
 
       - if: ${{ !inputs.component_app && !inputs.not_change_file }}
         name: Generate a fix tag for component
-        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        uses: intelygenz/monorepo-tagger-action@v1.3.0
         id: fix_tag_component
         with:
           mode: 'component'
@@ -120,7 +120,7 @@ jobs:
 
       - if: ${{ inputs.not_change_file }}
         name: Generate a fix tag for component and not change file
-        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        uses: intelygenz/monorepo-tagger-action@v1.3.0
         id: fix_tag_not_component
         with:
           mode: 'component'
@@ -133,7 +133,7 @@ jobs:
 
       - if: ${{ inputs.component_app }}
         name: Generate a fix tag for component app
-        uses: intelygenz/monorepo-tagger-action@v1.2.2
+        uses: intelygenz/monorepo-tagger-action@v1.3.0
         id: fix_tag_app
         with:
           mode: 'component'
