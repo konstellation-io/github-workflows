@@ -43,6 +43,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       tag: ${{ steps.release_tag_component.outputs.tag }}${{ steps.release_tag_app.outputs.tag }}${{ steps.release_tag_not_component.outputs.tag }}
+      version: ${{ steps.release_tag_component.outputs.version }}${{ steps.release_tag_app.outputs.version }}${{ steps.release_tag_not_component.outputs.version }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -91,6 +92,7 @@ jobs:
     runs-on: ubuntu-20.04
     outputs:
       tag: ${{ steps.fix_tag_component.outputs.tag }}${{ steps.fix_tag_app.outputs.tag }}${{ steps.fix_tag_not_component.outputs.tag }}
+      version: ${{ steps.fix_tag_component.outputs.version }}${{ steps.fix_tag_app.outputs.version }}${{ steps.fix_tag_not_component.outputs.version }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -184,7 +186,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            konstellation/${{ inputs.component_image }}:${{needs.create-release-tag.outputs.tag}}${{needs.create-fix-tag.outputs.tag}}
+            konstellation/${{ inputs.component_image }}:${{needs.create-release-tag.outputs.version}}${{needs.create-fix-tag.outputs.version}}
             konstellation/${{ inputs.component_image }}:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
