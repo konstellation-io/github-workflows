@@ -42,7 +42,7 @@ jobs:
     if: github.ref == 'refs/heads/main' # only in main branch
     runs-on: ubuntu-20.04
     outputs:
-      tag: ${{ steps.release_tag_component.outputs.tag }}${{ steps.release_tag_app.outputs.tag }}
+      tag: ${{ steps.release_tag_component.outputs.tag }}${{ steps.release_tag_app.outputs.tag }}${{ steps.release_tag_not_component.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -64,7 +64,7 @@ jobs:
       - if: ${{ inputs.not_change_file }}
         name: Generate a release tag for component and not change file
         uses: intelygenz/monorepo-tagger-action@v1.2.2
-        id: release_tag_component
+        id: release_tag_not_component
         with:
           mode: 'component'
           type: 'final'
@@ -90,7 +90,7 @@ jobs:
     if: startsWith(github.ref, 'refs/heads/release') # only in release branches
     runs-on: ubuntu-20.04
     outputs:
-      tag: ${{ steps.fix_tag_component.outputs.tag }}${{ steps.fix_tag_app.outputs.tag }}
+      tag: ${{ steps.fix_tag_component.outputs.tag }}${{ steps.fix_tag_app.outputs.tag }}${{ steps.fix_tag_not_component.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -121,7 +121,7 @@ jobs:
       - if: ${{ inputs.not_change_file }}
         name: Generate a fix tag for component and not change file
         uses: intelygenz/monorepo-tagger-action@v1.2.2
-        id: fix_tag_component
+        id: fix_tag_not_component
         with:
           mode: 'component'
           type: 'fix'
