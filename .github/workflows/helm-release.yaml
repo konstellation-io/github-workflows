@@ -36,7 +36,7 @@ jobs:
 
       - name: Generate a pre-release
         id: rc_tag
-        uses: intelygenz/monorepo-tagger-action@v2.0.1
+        uses: intelygenz/monorepo-tagger-action@v2.0.2
         with:
           current-major: ${{ inputs.current_major }}
           mode: 'product'
@@ -64,7 +64,7 @@ jobs:
 
       - name: Generate a fix tag
         id: fix_tag
-        uses: intelygenz/monorepo-tagger-action@v2.0.1
+        uses: intelygenz/monorepo-tagger-action@v2.0.2
         with:
           mode: 'product'
           type: 'fix'
