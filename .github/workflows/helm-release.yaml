@@ -34,7 +34,7 @@ jobs:
         id: rc_tag
         uses: intelygenz/monorepo-tagger-action@v1.3.0
         with:
-          current-major: 0
+          current-major: 1
           mode: 'product'
           type: 'pre-release'
           release-branch-prefix: "release/v"
