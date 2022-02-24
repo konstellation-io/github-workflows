@@ -12,6 +12,10 @@ on:
       chart_path:
         required: true
         type: string
+      current_major:
+        required: false
+        type: string
+        default: 0
     secrets:
       pat:
         required: true
@@ -34,7 +38,7 @@ jobs:
         id: rc_tag
         uses: intelygenz/monorepo-tagger-action@v1.3.0
         with:
-          current-major: 1
+          current-major: ${{ inputs.current_major }}
           mode: 'product'
           type: 'pre-release'
           release-branch-prefix: "release/v"
