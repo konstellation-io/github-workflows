@@ -74,9 +74,29 @@ jobs:
           done
       
       - name: Generate chart release
-        uses: helm/chart-releaser-action@v1.2.1
-        with:
-          charts_dir: ${{ inputs.chart_path }}
-          charts_repo_url: ${{ inputs.chart_url }}
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          # Download chart releaser
+          # This is a workaround needed because chart-releaser doesn't work with tags: https://github.com/helm/chart-releaser-action/issues/60
+          curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/v1.2.1/chart-releaser_1.2.1_linux_amd64.tar.gz"
+          tar -xzf cr.tar.gz
+          rm -f cr.tar.gz
+          repo=$(cut -d '/' -f 2 <<< "$GITHUB_REPOSITORY")
+          owner=$(cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY")
+          echo "Creating release..."
+          # package chart
+          ./cr package ${{ inputs.chart_path }}/$repo
+          # upload chart to github releases
+          ./cr upload \
+              --owner "$owner" \
+              --git-repo "$repo" \
+              --token "${{ secrets.GITHUB_TOKEN }}" \
+              --commit "$(git rev-parse HEAD)" \
+              --skip-existing
+          # Update index and push to github pages
+          ./cr index \
+              --owner "$owner" \
+              --git-repo "$repo" \
+              --token "${{ secrets.GITHUB_TOKEN }}" \
+              --charts-repo ${{ inputs.chart_url }} \
+              --index-path index.yaml \
+              --push
