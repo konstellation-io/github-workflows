@@ -103,6 +103,7 @@ jobs:
               --owner "$owner" \
               --git-repo "$repo" \
               --token "${{ secrets.GITHUB_TOKEN }}" \
+              --release-name-template "v{{ .Version }}" \
               --commit "$(git rev-parse HEAD)" \
               --skip-existing
           # Update index and push to github pages
