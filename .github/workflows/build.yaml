@@ -100,8 +100,8 @@ jobs:
         id: component_version
         run: |
           TAG=`yq r ${{ inputs.values_file }} '${{ inputs.component_helm_tag }}'`
-          echo ::set-output name=TAG::${TAG}
-          echo Component version in release branch is ${TAG}
+          echo ::set-output name=TAG::${TAG##*:}
+          echo Component version in release branch is ${TAG##*:}
 
       - if: ${{ !inputs.component_app && !inputs.not_change_file }}
         name: Generate a fix tag for component
