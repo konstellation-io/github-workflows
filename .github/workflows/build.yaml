@@ -85,7 +85,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.pat }}
 
   create-fix-tag:
-    if: startsWith(github.ref, 'refs/heads/release') # only in release branches
+    if: |
+      startsWith(github.ref, 'refs/heads/release') && 
+      github.event_name != 'pull_request'
     runs-on: ubuntu-20.04
     outputs:
       tag: ${{ steps.fix_tag_component.outputs.tag }}${{ steps.fix_tag_app.outputs.tag }}${{ steps.fix_tag_not_component.outputs.tag }}
