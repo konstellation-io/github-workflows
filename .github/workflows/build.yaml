@@ -102,7 +102,7 @@ jobs:
         id: component_version
         run: |
           TAG=`yq r ${{ inputs.values_file }} '${{ inputs.component_helm_tag }}'`
-          echo ::set-output name=TAG::${TAG##*:}
+          echo "TAG=${TAG##*:}" >> $GITHUB_OUTPUT
           echo Component version in release branch is ${TAG##*:}
 
       - if: ${{ !inputs.component_app && !inputs.not_change_file }}
