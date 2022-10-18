@@ -9,6 +9,7 @@ on:
       - .github/workflows/build.yaml
       - .github/workflows/helm-release.yaml
       - .github/workflows/helm-lint.yaml
+      - .github/workflows/lint-dockerfile.yaml
 
 jobs:
   release:
