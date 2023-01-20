@@ -1,8 +1,10 @@
 ## GITHUB WORKFLOWS
 
-This repository keeps the different workflows used in konstellation projects like kdl-server and kre (comming soon). This allow us to not repeat code in our different projects. This is not a workflow template.
+This repository keeps the workflows used in konstellation projects like kdl-server and kre (coming soon). This allows us not to repeat code in our other projects. This is not a workflow template.
 
-### Templates
+It also contains those workflows that are used as [required workflows](https://docs.github.com/en/actions/using-workflows/required-workflows).
+
+### CI Templates
 
 1. [helm-release](./.github/workflows/helm-release.yaml): Allow us to generate a new chart helm release (release candidate or fix inside a release branch). 
 Inputs and secrets:
@@ -36,6 +38,10 @@ Inputs and secrets:
     - `docker_token`: The token used to authenticate and allow us to push the image into the registry.
 
 5. [helm-lint](./.github/workflows/helm-lint.yaml): Execute a helm lint on a chart repository to validate the configuration. You must to have a `ct.yaml` file configured and a `helmlintconf.yaml` file in your repository root to validate the rules.
+
+## Required workflow
+
+1. [secrets-scanning.yml](./.github/workflows/secrets-scanning.yml): This workflow is used to scan the repository for secrets and alert us if there are any.
 
 ### References
 - https://docs.github.com/en/actions/learn-github-actions/reusing-workflows
