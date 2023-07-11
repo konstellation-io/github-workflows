@@ -2,7 +2,7 @@
   "name": "github-workflows",
   "version": "0.0.1",
   "dependencies": {
-    "semantic-release": "19.0.3",
+    "semantic-release": "21.0.7",
     "@semantic-release/github": "8.0.1",
     "@semantic-release/exec": "5.0.0"
   },
